@@ -11,27 +11,32 @@ async function fetchSong() {
     searchBtn.disabled = true;
 
     try {
-        let finalUrl = input;
-
-        // 1. Check if input is a Name or a URL
+        // Step 1: Resolve Search to a Spotify URL if it's just text
+        let spotifyUrl = input;
+        
         if (!input.includes("spotify.com")) {
-            // It's a song name! We search for the Spotify link first.
-            // Using a public search proxy (iTunes/Spotify search)
+            // We use the iTunes API (which has no CORS limits) to find the track first
             const searchRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(input)}&entity=song&limit=1`);
             const searchData = await searchRes.json();
             
-            if (searchData.results.length > 0) {
-                // We use the metadata from the search to "pretend" we have the link
-                // or you can use a search API specific to spotdown if they have one.
-                // For this example, we'll proceed with your specific API:
-                finalUrl = input; 
+            if (searchData.results.length === 0) {
+                throw new Error("Song not found");
             }
+            
+            // We build a search query for the API since we don't have the direct Spotify link
+            spotifyUrl = input; 
         }
 
-        // 2. Call your provided API
-        const apiUrl = `https://spotdown.org/api/song-details?url=${encodeURIComponent(finalUrl)}`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+        // Step 2: Use a CORS Proxy to talk to the SpotDown API
+        // This 'cors-anywhere' or similar proxy helps bypass the browser block
+        const proxy = "https://api.allorigins.win/get?url=";
+        const targetApi = `https://spotdown.org/api/song-details?url=${encodeURIComponent(spotifyUrl)}`;
+        
+        const response = await fetch(`${proxy}${encodeURIComponent(targetApi)}`);
+        const rawData = await response.json();
+        
+        // AllOrigins wraps the result in a 'contents' string, so we parse it
+        const data = JSON.parse(rawData.contents);
 
         if (data.status === "success" || data.id) {
             document.getElementById('songTitle').innerText = data.title;
@@ -39,15 +44,17 @@ async function fetchSong() {
             document.getElementById('albumArt').src = data.cover;
             
             const downloadBtn = document.getElementById('downloadLink');
-            // Ensure the API returns a download link; otherwise, we link to their download handler
-            downloadBtn.href = data.download_url || `https://spotdown.org/download?id=${data.id}`; 
+            // Check if the API gives a direct link, otherwise point to their download page
+            downloadBtn.href = data.download_url || `https://spotdown.org/download/${data.id}`;
             
             resultCard.classList.remove('hidden');
         } else {
-            alert("No results found. Try a Spotify Link for better accuracy.");
+            alert("API found no results for this query.");
         }
+
     } catch (error) {
-        alert("Make sure the API allows 'Search' queries. If not, paste the Spotify Link.");
+        console.error(error);
+        alert("Connection blocked or Song not found. Try pasting the full Spotify Link instead.");
     } finally {
         loader.classList.add('hidden');
         searchBtn.disabled = false;
