@@ -1,0 +1,59 @@
+<!<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALx-SpotSave | Premium Spotify Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#121212] text-white min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-2xl w-full text-center space-y-6">
+        <div class="flex justify-center mb-4">
+            <div class="bg-[#1DB954] p-3 rounded-full">
+                <i data-lucide="music" class="text-black w-8 h-8"></i>
+            </div>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Music without limits.</h1>
+        <p class="text-gray-400 text-lg">Search a song or Paste a Spotify song link to download high-quality audio instantly.</p>
+
+        <div class="relative group mt-10">
+            <input type="text" id="songUrl" 
+                placeholder="https://open.spotify.com/track/..." 
+                class="w-full bg-[#242424] border-2 border-transparent focus:border-[#1DB954] focus:outline-none rounded-full py-4 px-6 pr-32 text-white transition-all duration-300 shadow-2xl">
+            <button onclick="fetchSong()" id="searchBtn"
+                class="absolute right-2 top-2 bottom-2 bg-[#1DB954] hover:bg-[#1ed760] text-black font-bold px-6 rounded-full transition-transform active:scale-95">
+                Download
+            </button>
+        </div>
+
+        <div id="resultCard" class="hidden mt-12 bg-[#181818] rounded-xl p-6 border border-[#282828] animate-in fade-in zoom-in duration-300">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <img id="albumArt" src="" alt="Album Art" class="w-40 h-40 rounded-lg shadow-2xl">
+                <div class="flex-1 text-left w-full">
+                    <h2 id="songTitle" class="text-2xl font-bold truncate"></h2>
+                    <p id="artistName" class="text-gray-400 text-lg mb-4"></p>
+                    <a id="downloadLink" href="#" target="_blank" 
+                       class="inline-flex items-center gap-2 bg-white text-black px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform">
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                        Get MP3
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="loader" class="hidden mt-8">
+            <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#1DB954] mx-auto"></div>
+        </div>
+    </div>
+
+    <footer class="mt-20 text-gray-500 text-sm">
+        &copy; 2026 ALx-SpotSave. Not affiliated with Spotify AB.
+    </footer>
+
+    <script src="script.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>￼Enter
